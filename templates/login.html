@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% block body %}
+<script type="text/javascript">
+
+$(document).ready(function() {
+
+    $(".closeme").bind('click', function(ev){
+        $(".error").hide();
+    });
+// 
+//     $(".error").modal({
+//         minWidth: 800,
+//         maxWidth: 1000,
+//         maxHeight: 650,
+//         overlayClose:true,
+//         opacity:80
+//     });
+});
+
+
+</script>
+
+
+
+  <div style="background: url('static/images/fridge.png') no-repeat; width: 700px; height: 500px">
+
+  <form id='loginform' action="" method=post >
+    <fieldset>
+      <legend>Login</legend>
+      username: <input type=text name=username value="{{
+          request.form.username }}"></br>
+      password: <input type=password name=password></br>
+    <input type=submit value=Login>
+    </fieldset>
+  </form>
+{% if error %}
+    <p class=error ><img class='closeme' src="static/images/close.png" /><strong>Error:</strong> {{ error }}</p>
+{% endif %}
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class="flashes error">
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+<pre>{{session|pprint()}}</pre>
+
+  </div>
+{% endblock %}

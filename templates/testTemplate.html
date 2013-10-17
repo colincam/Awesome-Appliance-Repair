@@ -1,0 +1,12 @@
+<html>
+  <head>
+    <title>{{title}} - AAR testing</title>
+    <style>p {margin-bottom: 6px}</style>
+  </head>
+  <body>
+      <h1>Hello {{user}}!</h1>
+      <a href="{{ url_for('login') }}">log in</a>
+      <pre>session: {{ses}}</pre>
+      <pre>reqenviron: {{reqenviron|pprint()}}!</pre>
+  </body>
+</html>

@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+{% block body %}
+<script type="text/javascript">
+
+$(document).ready(function() {
+
+    $(".closeme").bind('click', function(ev){
+        $(".error").hide();
+    });
+});
+
+//     return render_template("dispacher.html",
+//         title = "Dispacher Interface",
+//         user = session['username'],
+//         reqenviron = request.environ,
+//         ses = session,
+//         legend = legend,
+//         response = response,
+//         owner = owner.title(), 
+//         type = type, 
+//         name = name.title(),
+//         bdate = bdate)
+
+</script>
+
+
+<div style="padding: 16px">
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class="flashes error">
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+<h1>{{ title }}</h1>
+<h3>Hello {{ user }}</h3>
+<p>from a query and result like this:</p>
+<pre>
+    {{legend}}
+</pre>
+<p>we can make a table like this:</p>
+<table style="width: 80%" border=1><td>{{owner}}</td><td>{{type}}</td><td>{{name}}</td><td>{{bdate}}</td></tr></table>
+<p>{{ses}}</p>
+<pre>{{reqenviron|pprint()}}</pre>
+
+{% if error %}
+    <p class=error ><img class='closeme' src="static/images/close.png" /><strong>Error:</strong> {{ error }}</p>
+{% endif %}
+
+</div>
+{% endblock %}
