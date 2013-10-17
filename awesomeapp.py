@@ -32,6 +32,14 @@ def logged_in(f):
             return redirect(login_url)
     return decorated_function
 
+@app.route('/logout')
+def logout():
+    if session.get('username') or session.get('logged_in') or session.pop('role'):
+        session.pop('username')
+        session.pop('role')
+        session.pop('logged_in')
+    return redirect(url_for('login'))
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
@@ -45,57 +53,50 @@ def login():
         if authhash not in AUTH_USERS:
             error = silly_text
         else:
-            session['username'] = uname
             session['logged_in'] = True
-            role = AUTH_USERS[authhash]['role']
+            session['username'] = uname
+            session['role'] = AUTH_USERS[authhash]['role']
             
-            if role == 'admin':
+            if session['role'] == 'admin':
                 return redirect(url_for('dispacher'))
-            else:
-                if next:
-                    flash('redirected ' + uname + ' to next')
-                    return redirect(next)
-                else: return redirect(url_for('tempTest'))
+            elif session['role'] == 'customer':
+                return redirect(url_for('tempTest'))
 
     return render_template('login.html', error=error, session=session)
 
 @app.route('/dispacher')
 @logged_in
 def dispacher():
-    db = MySQLdb.connect(**CONNECTION_ARGS)
-    cur = db.cursor()
-    cur.execute("select * from pet where sex = 'f'")
-    name, owner, type, sex, bdate, ddate = cur.fetchone()
-    legend = """
-            mysql> select * from pet;
-            +------+---------+---------+------+------------+------------+
-            | name | owner   | species | sex  | birth      | death      |
-            +------+---------+---------+------+------------+------------+
-            | fido | jon     | dog     | m    | 0000-00-00 | 0000-00-00 |
-            | odif | deborah | dog     | f    | 2000-01-01 | 2010-01-01 |
-            +------+---------+---------+------+------------+------------+
-       """
-    response = "%s\n<span style='background-color: #FCD'>%s</span> had a <span style='background-color: #FCD'>%s</span> whose name was <span style='background-color: #FCD'>%s</span>. She was born on <span style='background-color: #FCD'>%s</span>" % (legend, owner.title(), type, name.title(), bdate)
+    if session.get('role') == 'customer':
+        return logout()
+    else:
+        db = MySQLdb.connect(**CONNECTION_ARGS)
+        cur = db.cursor()
+        cur.execute("select * from pet where sex = 'f'")
+        name, owner, type, sex, bdate, ddate = cur.fetchone()
+        legend = """
+                mysql> select * from pet;
+                +------+---------+---------+------+------------+------------+
+                | name | owner   | species | sex  | birth      | death      |
+                +------+---------+---------+------+------------+------------+
+                | fido | jon     | dog     | m    | 0000-00-00 | 0000-00-00 |
+                | odif | deborah | dog     | f    | 2000-01-01 | 2010-01-01 |
+                +------+---------+---------+------+------------+------------+
+           """
+        response = "%s\n<span style='background-color: #FCD'>%s</span> had a <span style='background-color: #FCD'>%s</span> whose name was <span style='background-color: #FCD'>%s</span>. She was born on <span style='background-color: #FCD'>%s</span>" % (legend, owner.title(), type, name.title(), bdate)
     
-    return render_template("dispacher.html",
-        title = "Dispacher Interface",
-        user = session['username'],
-        reqenviron = request.environ,
-        ses = session,
-        legend = legend,
-        response = response,
-        owner = owner.title(), 
-        type = type, 
-        name = name.title(),
-        bdate = bdate)
+        return render_template("dispacher.html",
+            title = "Dispacher Interface",
+            user = session['username'],
+            reqenviron = request.environ,
+            ses = session,
+            legend = legend,
+            response = response,
+            owner = owner.title(), 
+            type = type, 
+            name = name.title(),
+            bdate = bdate)
 
-
-@app.route('/logout')
-def logout():
-    if session.get('username') or session.get('logged_in'):
-        session.pop('username')
-        session.pop('logged_in')
-    return redirect(url_for('login'))
 
 @app.route('/testTemplate')
 @logged_in
@@ -125,3 +126,11 @@ def shutdown():
 if __name__ == "__main__":
     app.run(port=9229)
     
+    
+### RANDOM JUNK TO GET RID OF ###
+
+#                 if next:
+#                     flash('redirected ' + uname + ' to next')
+#                     return redirect(next)
+#                 else: return redirect(url_for('tempTest'))
+
