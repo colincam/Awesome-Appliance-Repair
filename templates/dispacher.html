@@ -7,19 +7,9 @@ $(document).ready(function() {
     $(".closeme").bind('click', function(ev){
         $(".error").hide();
     });
+    
+    $("#jobs-table").tablesorter();
 });
-
-//     return render_template("dispacher.html",
-//         title = "Dispacher Interface",
-//         user = session['username'],
-//         reqenviron = request.environ,
-//         ses = session,
-//         legend = legend,
-//         response = response,
-//         owner = owner.title(), 
-//         type = type, 
-//         name = name.title(),
-//         bdate = bdate)
 
 </script>
 
@@ -37,12 +27,21 @@ $(document).ready(function() {
 
 <h1>{{ title }}</h1>
 <h3>Hello {{ user }}</h3>
-<p>from a query and result like this:</p>
-<pre>
-    {{legend}}
-</pre>
-<p>we can make a table like this:</p>
-<table style="width: 80%" border=1><td>{{owner}}</td><td>{{type}}</td><td>{{name}}</td><td>{{bdate}}</td></tr></table>
+    <div id="jobs-table-div">
+        <table id="jobs-table" class="tablesorter">
+        <thead><tr><th>job_ID</th><th>cust_ID</th><th>Last Name</th><th>Make</th><th>Appliance</th><th>Job Status</th><th>Appointment Date</th><th>Description</th></tr></thead>
+            <tbody id="result">        
+                {% for row in result %}
+                <tr>
+                    {% for cell in row %}
+                    <td>{{ cell }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+<hr />
 <p>{{ses}}</p>
 <pre>{{reqenviron|pprint()}}</pre>
 
@@ -52,3 +51,13 @@ $(document).ready(function() {
 
 </div>
 {% endblock %}
+<table>
+{% for row in table %}
+  <tr>
+  {% set rowloop = loop %}
+  {% for cell in row %}
+    <td id="cell-{{ rowloop.index }}-{{ loop.index }}>{{ cell }}</td>
+  {% endfor %}
+  </tr>
+{% endfor %}
+</table>

@@ -9,7 +9,7 @@ from flask import Flask, request, flash, Response, session, g, redirect, url_for
 import MySQLdb
 from AAR_config import AUTH_USERS, SECRET_KEY, CONNECTION_ARGS
 
-silly_text = '''I'm terribly sorry. I've looked everywhere but I can't find that combination of credentials in my records. Perhaps you mistyped your password? Or maybe you simply don't have an account with us yet. I am sorry to be so thick. I'm a bad server, I know, but what can you do: these are the wages of unskilled labor.'''
+silly_text = '''I'm terribly sorry. I've looked everywhere but I can't find that combination of credentials in my records. Perhaps you mistyped your password? Or maybe you simply don't have an account with us yet. I am sorry to be so thick. I'm a bad server, I know. I really wanted to be a refrigerator.'''
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -34,10 +34,9 @@ def logged_in(f):
 
 @app.route('/logout')
 def logout():
-    if session.get('username') or session.get('logged_in') or session.pop('role'):
-        session.pop('username')
-        session.pop('role')
-        session.pop('logged_in')
+    session.pop('username', None)
+    session.pop('role', None)
+    session.pop('logged_in', None)
     return redirect(url_for('login'))
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -72,40 +71,26 @@ def dispacher():
     else:
         db = MySQLdb.connect(**CONNECTION_ARGS)
         cur = db.cursor()
-        cur.execute("select * from pet where sex = 'f'")
-        name, owner, type, sex, bdate, ddate = cur.fetchone()
-        legend = """
-                mysql> select * from pet;
-                +------+---------+---------+------+------------+------------+
-                | name | owner   | species | sex  | birth      | death      |
-                +------+---------+---------+------+------------+------------+
-                | fido | jon     | dog     | m    | 0000-00-00 | 0000-00-00 |
-                | odif | deborah | dog     | f    | 2000-01-01 | 2010-01-01 |
-                +------+---------+---------+------+------------+------------+
-           """
-        response = "%s\n<span style='background-color: #FCD'>%s</span> had a <span style='background-color: #FCD'>%s</span> whose name was <span style='background-color: #FCD'>%s</span>. She was born on <span style='background-color: #FCD'>%s</span>" % (legend, owner.title(), type, name.title(), bdate)
-    
+        cur.execute("select j.jid, c.cid, c.lname, j.make, j.appliance, j.job_status, j.appointment, j.description from jobs j, customer c where j.cid = c.cid")
+        result = cur.fetchall()
+
+
         return render_template("dispacher.html",
             title = "Dispacher Interface",
             user = session['username'],
             reqenviron = request.environ,
             ses = session,
-            legend = legend,
-            response = response,
-            owner = owner.title(), 
-            type = type, 
-            name = name.title(),
-            bdate = bdate)
+            result = result)
 
 @app.route('/testTemplate')
 @logged_in
 def tempTest():
     session['objects'] = 42
     session.permanent = False
-    user = { 'nickname': "Handsome" } # fake user
+    
     return render_template("testTemplate.html",
         title = "Testing",
-        user = user,
+        user = session['username'],
         reqenviron = request.environ,
         ses = session)
         
