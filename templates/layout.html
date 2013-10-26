@@ -4,7 +4,15 @@
 <script type="text/javascript" src="{{ url_for('static', filename = 'js/jquery-1.10.2.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename = 'js/jquery.simplemodal.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename = 'js/jquery.tablesorter.min.js') }}"></script>
+<!-- 
+<script type="text/javascript">$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};</script>
+ -->
+
 <style>
+    body {
+        font-family: verdana, 'lucida grande', sans-serif;
+    }
+    
     #container {
         width: 800px;
         height: 100%;
@@ -20,6 +28,20 @@
         background-color: #59b6b2;
     }
     
+    #navbar {
+        position: relative;
+        top: -30px;
+        float: right;
+    }
+    
+    #navbar a {
+        color: #fff;
+        font-weight: bold;
+        text-decoration: none;
+    }
+    
+    #navbar a:hover {color: #fcb614; text-decoration: overline underline;}
+    
     #footer {
         width: 100%;
         height: 36px;
@@ -29,32 +51,141 @@
     #loginform {
         float: right;
         clear: both;
-        margin-top: 20px;
+        width: 340px;
+        margin: 16px 20px;
     }
-    .error {
+    
+    #infodiv {
+        width: 350px;
         float: right;
-        clear:both;
+        clear: right;
+        font-size: 10pt;
+        padding-right: 16px;
+    }
+    
+    #infodiv table {
+        width: 95%;
+        text-align: center;
+        font-size: 9pt;
+        float: right;
+        margin-bottom: 16px;
+    }
+    
+    #infodiv table tr {
+        background-color: #B0DFDD;
+    }
+        
+    #request-form {
+        float: right;
+        clear: both;
+        font-size: 80%;
+        width: 480px;
+        margin-right: 16px;
+    }
+    
+    
+    fieldset {
+        padding: 1em;
+    }
+    
+    label {
+        float:left;
+        width:30%;
+        margin-right:0.5em;
+        padding-top:0.2em;
+        text-align:right;
+    }
+
+    legend {
+        padding: 0.2em .5em;
+
+        font-weight: bold;
+    }
+
+    .error {
+        position: absolute;
         background: url(static/images/bubble400px.png) no-repeat;
-        margin-top: 0px;
+        left: 540px;
+        top:270px;
         width: 309px;
         text-align: center;
         padding: 36px;
         height: 300px;
     }
     
+    .request-error {
+        position: absolute;
+        background: url(static/images/bubble.png) no-repeat;
+        width: 370px;
+        height: 130px;
+        right: 360px;
+        top: 530px;
+        text-align: center;
+        padding: 16px 0 0 60px;
+    }
+    
+    #error-inner {
+        position: relative;
+        width: 250px;
+        margin-left: 32px;
+    }
+
     .closeme {
         float: right;
         margin-right: -46px;
         margin-top: -30px;
     }
+
+    .request-closeme {
+        float: right;
+        margin-right: 16px;
+        margin-top: -30px;
+    }
     
-    .closeme:hover {cursor: pointer;}
+    .closeme, .request-closeme:hover {cursor: pointer;}
+    
+    .job_status {
+        text-decoration: underline;
+    }
+    .job_status:hover {
+        color: red !important;
+        cursor: pointer;
+    }
+    
+    .job_date {
+        text-decoration: underline;
+    }
+    .job_date:hover {
+        color: red !important;
+        cursor: pointer;
+    }
+    
+    #update {display: none}
+    
+    .flashes {
+        background-color: #f18a20; 
+        color: #fff;
+        padding: 0px;
+        border-radius: 16px;
+    }
+    
+    #jobs-table-div {height: 300px; overflow: scroll}
+    #requested-jobs-table-div {
+        width: 476px;
+        float: right;
+        margin-right: 18px;
+        max-height: 200px;
+        overflow-y: scroll
+    }
+    
+    #requested-jobs-table th {border: none}
+    
 </style>
 
 </head>
 <title>AWESOME Appliance Repair</title>
 <div id="container">
-<div id="header"><img src="{{ url_for('static', filename = 'images/aar_logo1.png')}}" /><br></div>
+<div id="header"><img src="{{ url_for('static', filename = 'images/aar_logo1.png')}}" /></div>
 {% block body %}{% endblock %}
 <div id="footer"></div>
 </div>

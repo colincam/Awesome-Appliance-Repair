@@ -1,20 +1,24 @@
 {% extends "layout.html" %}
 {% block body %}
 <script type="text/javascript">
+$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+
 
 $(document).ready(function() {
 
-    $(".closeme").bind('click', function(ev){
-        $(".error").hide();
+    $(".closeme").on('click', function(ev){
+        $(".error").remove();
     });
-// 
-//     $(".error").modal({
-//         minWidth: 800,
-//         maxWidth: 1000,
-//         maxHeight: 650,
-//         overlayClose:true,
-//         opacity:80
-//     });
+
+    $("#reset_data").on('click', function(){
+        $.get($SCRIPT_ROOT  + '/resetdb', function(data){
+            $("#loginpage_content").append("<p class='error'><img class='closeme' src='static/images/close.png' />" + data.rows_deleted + " records, created from " + data.host + ':' + data.port + ", were deleted.</p>");
+            $(".closeme").bind('click', function(ev){
+                $(".error").remove();
+            });
+
+        });
+    });
 });
 
 
@@ -22,31 +26,46 @@ $(document).ready(function() {
 
 
 
-  <div style="background: url('static/images/fridge.png') no-repeat; width: 700px; height: 500px">
+  <div id="loginpage_content" style="background: url('static/images/fridge.png') no-repeat; height: 500px">
 
   <form id='loginform' action="" method=post >
     <fieldset>
       <legend>Login</legend>
-      username: <input type=text name=username value="{{
-          request.form.username }}"></br>
-      password: <input type=password name=password></br>
+      <label for="username">Username:</label><input type=text name=username value="{{
+          request.form.username }}"><br>
+      <label for="password">Password:</label><input type=password name=password><br><br>
     <input type=submit value=Login>
     </fieldset>
   </form>
+  
+  <div id="infodiv">
+    <p>This is a sample web application: a fictional appliance repair company. Customers logging in are directed to a page where they can make a request for appliance repair. Administrators logging in are directed to a page where they can view the requests that have been made, and update selected data for the jobs in the database.</p>
+    <p style="margin-bottom: 2px">There are three users built in:
+        <table>
+            <head><th>username</th><th>password</th><th>role</th></head>
+            <tr><td>ad1</td><td>ad1pw</td><td>administrator</td></tr>
+            <tr><td>cust1</td><td>cpw1</td><td>customer</td></tr>
+            <tr><td>cust2</td><td>cpw2</td><td>customer</td></tr>
+        </table></p>
+    <p>Click here to reset the database to the default sample data: <button id="reset_data">Reset Data</button>
+  </div>
+  
+  
+  
 {% if error %}
     <p class=error ><img class='closeme' src="static/images/close.png" /><strong>Error:</strong> {{ error }}</p>
 {% endif %}
 {% with messages = get_flashed_messages() %}
   {% if messages %}
-    <ul class="flashes error">
+    <div>
     {% for message in messages %}
-      <li>{{ message }}</li>
+      <p class="error"><img class='closeme' src="static/images/close.png" />{{ message }}</p>
     {% endfor %}
-    </ul>
+    </div>
   {% endif %}
 {% endwith %}
 
-<pre>{{session|pprint()}}</pre>
-
   </div>
+<pre style="display: none">{{session|pprint()}}</pre>
+<pre style="display: none">{{reqenviron|pprint()}}</pre>
 {% endblock %}

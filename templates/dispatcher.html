@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+{% block body %}
+<script type="text/javascript">
+$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+
+function formReset(){
+        document.getElementById("update-form").reset();
+        $("#update").hide();
+    }
+
+$(document).ready(function() {
+
+    $(".closeme").bind('click', function(ev){
+        $(".error, .flashes").hide();
+    });
+    
+    $("#jobs-table").tablesorter({ 
+        // sort on the first column and third column, order asc 
+        sortList: [[1,0]] 
+    });
+    
+    $(".job_status, .job_date").on('click', function(){
+        $(".flashes").empty();
+        $("#update").empty();
+        var $td = $(this)
+        var field_value = $td.text();
+        var field_name = $td.closest('table').find('th').eq($td.index()).attr("id");
+        var job_id = $td.parent().children().eq(0).text();
+        
+        // Submit button sends 'POST', no ajax needed.
+        if (field_name == "job_status"){
+            $("#update").html("<form id='update-form' action='' method=post > <fieldset> <legend>Update Field</legend> Job ID: <input type=text name='job_id' value=" + job_id +" readonly> Column: <input type=text name='field_value' value=" + field_name + " readonly> Current Value: <input type=text name='current_value' value=" + field_value + " readonly> <br><br><input type='radio' name='new_value' value='pending'>pending<br> <input type='radio' name='new_value' value='completed'>completed<br><br> <input type=submit value=Update> <input type='button' onclick='formReset()' value='Cancel'></fieldset> </form>").show();
+            } else {
+            $("#update").html("<form id='update-form' action='' method=post > <fieldset> <legend>Update Field</legend> Job ID: <input type=text name='job_id' value=" + job_id +" readonly> Column: <input type=text name='field_value' value=" + field_name + " readonly> Current Value: <input type=text name='current_value' value=" + field_value + " readonly><br> <br> Enter Date yyyy-mm-dd: <input type='text' name='new_value'><br><br> <input type=submit value=Update> <input type='button' onclick='formReset()' value='Cancel'></fieldset> </form>").show();
+            
+            }
+    });
+    
+    
+    //TODO: form validation.
+
+});
+
+</script>
+
+<div id="navbar">
+<a href="{{ url_for('logout') }}">logout</a>
+</div>
+
+<div style="padding: 16px">
+    <h1 style="text-align: center;margin: 0px;font-size: 16pt;">User: {{ user }},&nbsp;&nbsp;&nbsp;&nbsp;{{ title }}</h1>
+    <p>Here are the jobs in the database:</p>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flashes"><img style="float:left; width: 18px; margin:auto; padding-right: 40px" class='closeme' src="static/images/close.png" />
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+
+    <div id="jobs-table-div">
+        <table id="jobs-table" class="tablesorter">
+            <thead>
+                <tr><th id='jid'>job<br>ID</th><th id='cid'>cust<br>ID</th><th id='lname'>Last Name</th><th id='make'>Make</th><th id='appliance'>Appliance</th><th id='job_status'>Job Status</th><th id='appointment'>Appointment</th><th id='description'>Description</th>
+                </tr>
+            </thead>
+            <tbody id="result">        
+            {% for row in result %}
+                <tr id="{{ loop.index }} "class="{{ loop.cycle('odd', 'even') }}">
+                {% for cell in row %}
+                    {% if loop.index == 6 %}
+                    <td class="job_status">{{ cell }}</td>
+                    {% elif loop.index == 7 %}
+                    <td class="job_date">{{ cell }}</td>
+                    {% else %}
+                    <td>{{ cell }}</td>
+                    {% endif %}
+                {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <pre id='tst'></pre>
+    <p style="display: none">{{ses}}</p>
+    <pre style="display: none">{{reqenviron|pprint()}}</pre>
+    <div id="update">&nbsp;</div>
+    {% if error %}
+        <div class=error ><img class='closeme' src="static/images/close.png" /><strong>Error:</strong> {{ error }}</div>
+    {% endif %}
+
+</div>
+{% endblock %}
