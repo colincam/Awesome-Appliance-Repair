@@ -7,6 +7,23 @@ function formReset(){
         document.getElementById("update-form").reset();
         $("#update").hide();
     }
+    
+function updateValidate(){
+    var valid = true;
+    var re = /\d{4}\-\d{2}\-\d{2}/;
+    var field = $("#update-form input[name='new_value']").val();
+    
+    if (field.toUpperCase() == 'NONE' || field.toUpperCase() == 'NULL' || re.test(field)){
+        valid = true;
+    } else {
+        valid = false;
+    };
+    
+    if (valid == false){
+        alert("please enter a date in the form yyyy-mm-dd \n or the string 'null' or 'none'");
+        return false;
+    }        
+}
 
 $(document).ready(function() {
 
@@ -29,11 +46,30 @@ $(document).ready(function() {
         
         // Submit button sends 'POST', no ajax needed.
         if (field_name == "job_status"){
-            $("#update").html("<form id='update-form' action='' method=post > <fieldset> <legend>Update Field</legend> Job ID: <input type=text name='job_id' value=" + job_id +" readonly> Column: <input type=text name='field_value' value=" + field_name + " readonly> Current Value: <input type=text name='current_value' value=" + field_value + " readonly> <br><br><input type='radio' name='new_value' value='pending'>pending<br> <input type='radio' name='new_value' value='completed'>completed<br><br> <input type=submit value=Update> <input type='button' onclick='formReset()' value='Cancel'></fieldset> </form>").show();
+            $("#update").html("<form id='update-form' action='' method=post > <fieldset> <legend>Update Field</legend> Job ID: " + job_id + " <input type=hidden name='job_id' value=" + job_id +" ><br>Column: " + field_name + "<input type=hidden name='field_value' value=" + field_name + " ><input type=hidden name='current_value' value=" + field_value + " > <br><br><input type='radio' name='new_value' value='pending'>pending<br> <input type='radio' name='new_value' value='completed'>completed<br><br> <input type=submit value=Update> <input type='button' onclick='formReset()' value='Cancel'></fieldset> </form>").show();
             } else {
-            $("#update").html("<form id='update-form' action='' method=post > <fieldset> <legend>Update Field</legend> Job ID: <input type=text name='job_id' value=" + job_id +" readonly> Column: <input type=text name='field_value' value=" + field_name + " readonly> Current Value: <input type=text name='current_value' value=" + field_value + " readonly><br> <br> Enter Date yyyy-mm-dd: <input type='text' name='new_value'><br><br> <input type=submit value=Update> <input type='button' onclick='formReset()' value='Cancel'></fieldset> </form>").show();
+            $("#update").html("<form id='update-form' action='' onsubmit='return updateValidate();' method=post >\
+            <fieldset>\
+                 <legend>Update Field</legend> Job ID: " + job_id + "\
+                 <input type=hidden name='job_id' value=" + job_id +" >\
+                 <br>Column: " + field_name + "\
+                 <input type=hidden name='field_value' value='" + field_name + "' >\
+                 <br><br> Enter Date yyyy-mm-dd: <input type='text' name='new_value' value='" + field_value + "'>\
+                 <br><br> <input type=submit value=Update>\
+                 <input type='button' onclick='formReset()' value='Cancel'>\
+            </fieldset> </form>").show();
             
             }
+            
+        if (field_value == 'pending'){
+            $("#update-form input[type='radio'][value='pending']").prop('checked', true)
+        } else if (field_value == 'completed'){
+            $("#update-form input[type='radio'][value='completed']").prop('checked', true)
+        }
+        
+        
+        
+        
     });
     
     
@@ -48,7 +84,7 @@ $(document).ready(function() {
 </div>
 
 <div style="padding: 16px">
-    <h1 style="text-align: center;margin: 0px;font-size: 16pt;">User: {{ user }},&nbsp;&nbsp;&nbsp;&nbsp;{{ title }}</h1>
+    <p class="aarhead">User: {{ user }},&nbsp;&nbsp;&nbsp;&nbsp;{{ title }}</p>
     <p>Here are the jobs in the database:</p>
     {% with messages = get_flashed_messages() %}
       {% if messages %}

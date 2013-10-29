@@ -15,13 +15,13 @@ from flask import Flask, request, flash, Response, session, g, jsonify, redirect
 import MySQLdb
 from AAR_config import SECRET_KEY, CONNECTION_ARGS
 ########### local and temporary debugging crap: ###########
-import logging
-logger = logging.getLogger('aarapp')
-hdlr = logging.FileHandler('/Users/jjc/Desktop/aarapp.log')
-formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-hdlr.setFormatter(formatter)
-logger.addHandler(hdlr) 
-logger.setLevel(logging.INFO)
+# import logging
+# logger = logging.getLogger('aarapp')
+# hdlr = logging.FileHandler('/Users/jjc/Desktop/aarapp.log')
+# formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+# hdlr.setFormatter(formatter)
+# logger.addHandler(hdlr) 
+# logger.setLevel(logging.INFO)
 ##########################################################
 
 login_error = '''I'm sorry. I can't find that combination of credentials in my database. Perhaps you mis-typed your password?'''
@@ -29,7 +29,6 @@ login_error = '''I'm sorry. I can't find that combination of credentials in my d
 app = Flask(__name__)
 app.config['DEBUG'] = True #TODO: put this in __main__?
 app.config['SECRET_KEY'] = SECRET_KEY
-
 
 def logged_in(f):
     @wraps(f)
@@ -82,14 +81,13 @@ def login():
 
 @app.route('/resetdb')
 def resetdb():
-    host, port = request.environ['HTTP_HOST'].split(':')
+    IPadd = request.environ['REMOTE_ADDR']
     db = MySQLdb.connect(**CONNECTION_ARGS)
     cur = db.cursor()
-    rows = cur.execute("delete from jobs where j_ip = %s and j_port = %s", (host,port))
+    rows = cur.execute("delete from jobs where j_ip = %s", (IPadd))
     db.commit()
     cur.close()
-    return jsonify({'host': host, 'port': port, 'rows_deleted': rows})
-    
+    return jsonify({'IP': IPadd,'rows_deleted': rows})
     
 @app.route('/dispatcher', methods=['GET', 'POST'])
 @logged_in
@@ -102,38 +100,35 @@ def dispatcher():
     if session.get('role') != 'admin':
         flash( 'please log in first' )
         return logout()
+    
     ##POST
     if request.method == 'POST':
         jid = request.form['job_id']
         field = request.form['field_value']
         new_value = request.form['new_value']
-
-        if field == 'job_status':
-            try:
-                affected_count = cur.execute("""update jobs set job_status = %s where j_id=%s""", (new_value, jid))
-                db.commit()
-                logger.info("%d", affected_count)
-                if affected_count > 0: flash( 'your update was successful' )
-            except MySQLdb.IntegrityError:
-                logger.warn("failed to update %s" % (jid,))
-                error = "failed to update job ID: %s" % (jid,)
-            finally:
-                cur.close()
-                
-        else:
-            if new_value.lower() == "null": new_value = None
-            try:
-                affected_count = cur.execute("""update jobs set appointment = %s where j_id=%s""", (new_value, jid))
-                db.commit()
-                logger.info("%d, %s", affected_count, new_value)
-                if affected_count > 0:
-                    flash( 'your update was successful' )
-            except MySQLdb.IntegrityError:
-                logger.warn("failed to update %s" % (jid,))
-                error = "failed to update job ID: %s" % (jid,)
-            finally:
-                cur.close()
+        set_job_status = "update jobs set job_status = %s where j_id=%s"
+        set_appointment = "update jobs set appointment = %s where j_id=%s"
         
+        if field == 'job_status':
+            query = set_job_status
+        else:
+            #logger.info("%s", new_value)
+            query = set_appointment
+            if new_value.upper() == 'NULL' or new_value.upper() == 'NONE': new_value = None
+        
+        query = set_job_status if field == 'job_status' else set_appointment
+        
+        try:
+            affected_count = cur.execute(query, (new_value, jid))
+            db.commit()
+            #logger.info("%d", affected_count)
+            if affected_count > 0: flash( 'your update was successful' )
+        except MySQLdb.IntegrityError:
+            #logger.warn("failed to update %s" % (jid,))
+            error = "failed to update job ID: %s" % (jid,)
+        finally:
+            cur.close()
+                    
         return redirect(url_for('dispatcher'))
     
     ##GET
@@ -152,19 +147,16 @@ def dispatcher():
 @app.route('/repairRequest', methods=['GET', 'POST'])
 @logged_in
 def repairRequest():
-    session.permanent = False
-    error = None
-    user = session.get('username')
-    
-    db = MySQLdb.connect(**CONNECTION_ARGS)
-    cur = db.cursor()
-    if not session.get('logged_in'):
-        abort(401)
     if session.get('role') != 'customer':
         flash( 'please log in first' )
         return logout()
-    host, port = request.environ['HTTP_HOST'].split(':')
     
+    session.permanent = False
+    error = None
+    user = session.get('username')
+    host = request.environ['REMOTE_ADDR']
+    db = MySQLdb.connect(**CONNECTION_ARGS)
+    cur = db.cursor()
     rows = cur.execute("select c.fname, c.lname, u.cid from customer c, users u where u.uname = %s and u.cid = c.cid",(user,))
     if rows > 0:
         fname, lname, cid = cur.fetchone()
@@ -178,21 +170,19 @@ def repairRequest():
         description = request.form['description']
         appointment = None
         job_status = 'pending'
-        logger.info("fname: %s, uname: %s, cid: %s", fname,lname,cid)
+        #logger.info("fname: %s, uname: %s, cid: %s", fname,lname,cid)
         
-        rows = cur.execute("insert into jobs (j_ip,j_port,cid, make, appliance, appointment, job_status, description) values\
-            (%s, %s, %s, %s, %s, %s, %s, %s)", (host, port, cid, make, type, appointment, job_status, description))
-        
+        rows = cur.execute("insert into jobs (j_ip,cid, make, appliance, appointment, job_status, description) values\
+            (%s, %s, %s, %s, %s, %s, %s)", (host, cid, make, type, appointment, job_status, description))
         db.commit()
         if rows == 0:
-            error = "your repair request failed"
+            error = "Your repair request failed."
         
-        rows = cur.execute("select j_id, make, appliance, job_status, description from jobs where cid = %s and j_ip = %s and j_port = %s", (cid, host, port))
+        rows = cur.execute("select j_id, make, appliance, job_status, appointment from jobs where cid = %s and j_ip = %s", (cid, host))
         result = cur.fetchall()
+        cur.close()
+        error = "Your request has been added to the database."    
         
-        
-        
-        cur.close()        
         return render_template("repairRequest.html",
             title = "Repair Request",
             user = user,
@@ -203,35 +193,22 @@ def repairRequest():
             reqenviron = request.environ,
             ses = session)
     
-    
+    #GET
     else:
-        cur.execute("select c.fname, c.lname from customer c, users u where u.uname = %s and u.cid = c.cid", (user,))
-        fname, lname = cur.fetchone()
+        cur.execute("select j_id, make, appliance, job_status, appointment from jobs where j_ip = %s and cid = %s", (host, cid))
+        result = cur.fetchall()
+        
         return render_template("repairRequest.html",
             title = "Repair Request",
             user = user,
             fname = fname,
             lname = lname,
             error = error,
+            result = result,
             reqenviron = request.environ,
             ses = session)
         cur.close()
-    
 
-           
-    
-@app.route('/testTemplate')
-@logged_in
-def tempTest():
-    session.permanent = False
-    
-    return render_template("testTemplate.html",
-        title = "Testing",
-        user = session['username'],
-        reqenviron = request.environ,
-        ses = session)
-        
-    
 ##### Shut down the simple server from the browser address bar #####
 def shutdown_server():
     func = request.environ.get('werkzeug.server.shutdown')

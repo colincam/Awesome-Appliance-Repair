@@ -3,7 +3,6 @@ CREATE DATABASE AARdb
 
 USE AARdb;
 
-
 CREATE TABLE `customer` (
     `cid` mediumint NOT NULL auto_increment,
     `fname` varchar(20),
@@ -16,7 +15,6 @@ CREATE TABLE `customer` (
     primary key(cid)
 ) ENGINE=InnoDB;
 
-
 CREATE TABLE `users` (
     `uname` varchar(8) NOT NULL,
     `cid` mediumint,
@@ -28,7 +26,6 @@ CREATE TABLE `users` (
 
 CREATE TABLE `jobs` (
     `j_ip` varchar(20),
-    `j_port` mediumint,
     `j_id` mediumint NOT NULL AUTO_INCREMENT,
     `cid` mediumint,
     `make` varchar(30),
@@ -73,50 +70,50 @@ insert into customer (fname,lname,address,city,state,zip,phone) values
     ('Hayden', 'Tourtellotte', '7306 Tupelo', 'Jackson', 'MN', '16375', '762-555-8919'),
     ('Astrid', 'Tardio', '225 Tamarack', 'Auburn', 'MT', '43119', '971-555-9385'),
     ('Agatha', 'Trench', '9593 Holly', 'Franklin', 'ND', '15642', '708-555-4531');
+    
+insert into users (uname,cid,role,pw) values
+('ad1',NULL,'admin','1b12c708b0d0066f6fc3a37cf0c3f37a6e2cf750'),
+('cust1',1,'customer','6870fbd602889b7d16fb30900495562ecc41140e'),
+('cust2',2,'customer','249dd05ab3af0ca8fb9809fc3edbb6c6d9939a22');
 
-insert into jobs (j_ip,j_port,cid, make, appliance, appointment, job_status, description) values
-    ('localhost',9229,1,'maytag','washer', null, 'pending', "outflow hoses leak"),
-    ('localhost',9229,2,'GE','refrigerator', '2013-11-05', 'completed', "Ices up; won't defrost");
 
-# notes
+insert into jobs (j_ip,cid, make, appliance, appointment, job_status, description) values
+    ('000.000.000.000',3,'Maytag','Washer', null, 'pending', "outflow hoses leak"),
+    ('000.000.000.000',4,'GE','Refrigerator', '2013-11-01', 'completed', "Ices up; won't defrost"),
+    ('000.000.000.000',5,'Alessi','Teapot', null, 'pending', "explodes"),
+    ('000.000.000.000',6,'Amana','Range', '2013-11-02', 'completed', "oven heats unevenly"),
+    ('000.000.000.000',7,'Whirlpool','Refrigerator', '2013-11-03', 'pending', "Makes a rattling noise"),
+    ('000.000.000.000',8,'GE','Microwave', '2013-11-04', 'pending', "Sparks and smokes when I put forks in it"),
+    ('000.000.000.000',9,'Maytag','Drier', null, 'pending', "Never heats up"),
+    ('000.000.000.000',10,'Amana','Refrigerator', '2013-11-05', 'pending', "Temperature too low, can't adjust."),
+    ('000.000.000.000',11,'Samsung','Washer', null, 'pending', "Doesn't get my bear suit white"),
+    ('000.000.000.000',12,'Frigidaire','Refrigerator', '2013-11-06', 'completed', "Has a bad smell I can't get rid of."),
+    ('000.000.000.000',13,'In-Sink-Erator','Dispose-all', null, 'pending', "blades broken"),
+    ('000.000.000.000',14,'KitchenAid','Mixer', '2013-11-07', 'completed', "Blows my fuses"),
+    ('000.000.000.000',15,'Moulinex','Juicer', null, 'pending', "Won't start"),
+    ('000.000.000.000',16,'Viking','Range', '2013-11-08', 'completed', "Gas leak"),
+    ('000.000.000.000',17,'Aga','Range', null, 'pending', "burner cover is cracked"),
+    ('000.000.000.000',18,'Jennaire','Cooktop', '2013-11-09', 'completed', "Glass cracked"),
+    ('000.000.000.000',19,'Wolfe','Stove', null, 'pending', "Burners are uneven"),
+    ('000.000.000.000',20,'LG','Dehumidifier', '2013-11-10', 'pending', "Ices up when external temp is around freezing"),
+    ('000.000.000.000',21,'DeLonghi','Oil Space Heater', null, 'pending', "Smells bad"),
+    ('000.000.000.000',22,'Kenmore','Refrigerator', '2013-11-11', 'pending', "excessive vibration"),
+    ('000.000.000.000',23,'Maytag','Washer/Drier', null, 'pending', "outflow hoses leak"),
+    ('000.000.000.000',24,'GE','Refrigerator', '2013-11-12', 'pending', "Refrigerator light is defective"),
+    ('000.000.000.000',25,'Kenmore','Washer', null, 'pending', "Unbalanced spin cycle"),
+    ('000.000.000.000',26,'Cookmore','Outdoor Grill', '2013-11-13', 'pending', "Smoker box is stuck"),
+    ('000.000.000.000',27,'Kenmore','Water heater', null, 'pending', "Can't adjust temperature"),
+    ('000.000.000.000',28,'Sanyo','Minifridge', '2013-11-14', 'pending', "Makes a lot of noise"),
+    ('000.000.000.000',29,'Bosch','Dishwasher', null, 'pending', "leaves spots on my glases"),
+    ('000.000.000.000',30,'Whirlpool','Trash Compactor', '2013-11-15', 'pending', "leaking hydraulic fluid");
 
+
+# notes:
 # for multiple column primary key, can't use autoincrement. Job Id's will be generated in the code.
 
-# ALTER TABLE Orders
-# ADD FOREIGN KEY (P_Id)
-# REFERENCES Persons(P_Id)
 
 # ALTER TABLE jobs add column tid mediumint, add foreign key(tid) references tech(tid);
 # SELECT j.jid, c.cid, c.lname, j.make, j.appliance, j.job_status, j.appointment, j.description
 # FROM jobs j, customer c
 # WHERE j.cid = c.cid;
 
-insert into jobs (j_ip,j_port,cid, make, appliance, appointment, job_status, description) values
-    ('000.000.000.000',8080,3,'Maytag','Washer', null, 'pending', "outflow hoses leak"),
-    ('000.000.000.000',8080,4,'GE','Refrigerator', '2013-11-01', 'completed', "Ices up; won't defrost"),
-    ('000.000.000.000',8080,5,'Alessi','Teapot', null, 'pending', "explodes"),
-    ('000.000.000.000',8080,6,'Amana','Range', '2013-11-02', 'completed', "oven heats unevenly"),
-    ('000.000.000.000',8080,7,'Whirlpool','Refrigerator', '2013-11-03', 'pending', "Makes a rattling noise"),
-    ('000.000.000.000',8080,8,'GE','Microwave', '2013-11-04', 'pending', "Sparks and smokes when I put forks in it"),
-    ('000.000.000.000',8080,9,'Maytag','Drier', null, 'pending', "Never heats up"),
-    ('000.000.000.000',8080,10,'Amana','Refrigerator', '2013-11-05', 'pending', "Temperature too low, can't adjust."),
-    ('000.000.000.000',8080,11,'Samsung','Washer', null, 'pending', "Doesn't get my bear suit white"),
-    ('000.000.000.000',8080,12,'Frigidaire','Refrigerator', '2013-11-06', 'completed', "Has a bad smell I can't get rid of."),
-    ('000.000.000.000',8080,13,'In-Sink-Erator','Dispose-all', null, 'pending', "blades broken"),
-    ('000.000.000.000',8080,14,'KitchenAid','Mixer', '2013-11-07', 'completed', "Blows my fuses"),
-    ('000.000.000.000',8080,15,'Moulinex','Juicer', null, 'pending', "Won't start"),
-    ('000.000.000.000',8080,16,'Viking','Range', '2013-11-08', 'completed', "Gas leak"),
-    ('000.000.000.000',8080,17,'Aga','Range', null, 'pending', "burner cover is cracked"),
-    ('000.000.000.000',8080,18,'Jennaire','Cooktop', '2013-11-09', 'completed', "Glass cracked"),
-    ('000.000.000.000',8080,19,'Wolfe','Stove', null, 'pending', "Burners are uneven"),
-    ('000.000.000.000',8080,20,'LG','Dehumidifier', '2013-11-10', 'pending', "Ices up when external temp is around freezing"),
-    ('000.000.000.000',8080,21,'De’Longhi','Oil Space Heater', null, 'pending', "Smells bad"),
-    ('000.000.000.000',8080,22,'Kenmore','Refrigerator', '2013-11-11', 'pending', "excessive vibration"),
-    ('000.000.000.000',8080,23,'Maytag','Washer/Drier', null, 'pending', "outflow hoses leak"),
-    ('000.000.000.000',8080,24,'GE','Refrigerator', '2013-11-12', 'pending', "Refrigerator light is defective"),
-    ('000.000.000.000',8080,25,'Kenmore','Washer', null, 'pending', "Unbalanced spin cycle"),
-    ('000.000.000.000',8080,26,'Cookmore','Outdoor Grill', '2013-11-13', 'pending', "Smoker box is stuck"),
-    ('000.000.000.000',8080,27,'Kenmore','Water heater', null, 'pending', "Can't adjust temperature"),
-    ('000.000.000.000',8080,28,'Sanyo','Minifridge', '2013-11-14', 'pending', "Makes a lot of noise"),
-    ('000.000.000.000',8080,29,'Bosch','Dishwasher', null, 'pending', "leaves spots on my glases"),
-    ('000.000.000.000',8080,30,'Whirlpool','Trash Compactor', '2013-11-15', 'pending', "leaking hydraulic fluid");

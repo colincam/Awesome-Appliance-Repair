@@ -12,7 +12,7 @@ $(document).ready(function() {
 
     $("#reset_data").on('click', function(){
         $.get($SCRIPT_ROOT  + '/resetdb', function(data){
-            $("#loginpage_content").append("<p class='error'><img class='closeme' src='static/images/close.png' />" + data.rows_deleted + " records, created from " + data.host + ':' + data.port + ", were deleted.</p>");
+            $("#loginpage_content").append("<p class='error'><img class='closeme' src='static/images/close.png' />" + data.rows_deleted + " records, created from " + data.IP + ", were deleted.</p>");
             $(".closeme").bind('click', function(ev){
                 $(".error").remove();
             });
@@ -39,7 +39,7 @@ $(document).ready(function() {
   </form>
   
   <div id="infodiv">
-    <p>This is a sample web application: a fictional appliance repair company. Customers logging in are directed to a page where they can make a request for appliance repair. Administrators logging in are directed to a page where they can view the requests that have been made, and update selected data for the jobs in the database.</p>
+    <p>This is the log on page for Awesome Appliance. If you log on as a customer, you're directed to a page where you can request repairs. If you log on as an administrator, you're directed to a page where you can view requests and update data in the database.</p>
     <p style="margin-bottom: 2px">There are three users built in:
         <table>
             <head><th>username</th><th>password</th><th>role</th></head>
