@@ -100,53 +100,70 @@
         text-align:right;
     }
 
+/* getting rid of fieldset?
+    #loginform {
+        float: right;
+        clear: both;
+        width: 316px;
+        margin: 16px 20px;
+        border: 2px groove;
+        padding: 9px;
+    }
+
+   legend {
+        padding: 0.2em .5em;
+        font-weight: bold;
+        margin: -24px 0px 16px;
+        display: block;
+        background: #fff;
+    }
+    
+ */
+
     legend {
         padding: 0.2em .5em;
-
         font-weight: bold;
     }
 
     .error {
-        position: absolute;
+        position: relative;
         background: url(static/images/bubble400px.png) no-repeat;
-        left: 575px;
-        top:270px;
+        left: 310px;
+        top:110px;
         width: 309px;
         text-align: center;
-        padding: 36px;
-        height: 300px;
+        padding: 0px 36px;
+        height: 400px;
     }
     
     .request-error {
-        position: absolute;
+        position: relative;
         background: url(static/images/bubble.png) no-repeat;
-        width: 370px;
-        height: 130px;
-        right: 360px;
-        top: 530px;
+        width: 400px;
+        height: 140px;
+        left: 260px;
+        top: 230px;
         text-align: center;
-        padding: 16px 0 0 60px;
+        padding: 0px 60px;
     }
     
-    #error-inner {
+    #request-error-inner {
         position: relative;
-        width: 250px;
-        margin: 16px 32px;
+        left: 40px;
+        top: -10px;
     }
-
     .closeme {
-        float: right;
-        margin-right: -46px;
-        margin-top: -30px;
+        position: relative;
+        left: 190px;
     }
 
     .request-closeme {
-        float: right;
-        margin-right: 16px;
-        margin-top: -30px;
+        position: relative;
+        margin-top: -16px;
+        left: 216px;
     }
     
-    .closeme, .request-closeme:hover {cursor: pointer;}
+    .closeme, .request-closeme, .dispatch-closeme:hover {cursor: pointer;}
     
     .job_status {
         text-decoration: underline;

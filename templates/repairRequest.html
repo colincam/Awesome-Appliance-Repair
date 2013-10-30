@@ -5,6 +5,7 @@
 <script type="text/javascript">
 
 function validateForm(){
+    $(".request-error").remove();
     var valid = true
     $("#request-form input[type='text'], textarea").each(function(){
         var $this = $(this);
@@ -14,7 +15,7 @@ function validateForm(){
     });
 
     if(valid == false){
-        $("#request-form-div").append("<div class='request-error'><img class='request-closeme' src='static/images/close.png' /><div id='error-inner'>Please fill out all of the fields above before clicking the Submit button.</div></div>");
+        $("#request-form-div").append("<div class='request-error'><img class='request-closeme' src='static/images/close.png' /><p id='request-error-inner'>Please fill out all of the fields above before clicking the Submit button.</p></div>");
         $(".request-closeme").on('click', function(ev){
             $(".request-error").remove();
         });            
@@ -98,7 +99,7 @@ $(document).ready(function() {
 {% endif %}
 
     {% if error %}
-        <div class="request-error"><img class='request-closeme' src="static/images/close.png" /><div id="error-inner">{{ error }}</div></div>
+        <div class="request-error"><img class='request-closeme' src="static/images/close.png" /><p id="request-error-inner">{{ error }}</p></div>
     {% endif %}
 
 </div>

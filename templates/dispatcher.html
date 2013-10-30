@@ -8,12 +8,30 @@ function formReset(){
         $("#update").hide();
     }
     
+function validateDate(input){
+    var valid = false;
+    var sdate = input.split('-')
+    if (!/^\d{4}$/.test(sdate[0]) || !/^\d{2}$/.test(sdate[1]) || !/^\d{2}$/.test(sdate[2])){
+        alert('not valid date pattern, please use yyyy-mm-dd');
+    } else {
+        var yearfield = sdate[0]
+        var monthfield = sdate[1]
+        var dayfield = sdate[2]
+        var dayobj = new Date(yearfield, monthfield-1, dayfield)
+        if ((dayobj.getMonth()+1!=monthfield)||(dayobj.getDate()!=dayfield)||(dayobj.getFullYear()!=yearfield))
+            alert("Invalid Day, Month, or Year range detected. Please correct and submit again.")
+        else
+            valid = true
+    }
+    
+    return valid
+}
+    
 function updateValidate(){
     var valid = true;
     var re = /\d{4}\-\d{2}\-\d{2}/;
     var field = $("#update-form input[name='new_value']").val();
-    
-    if (field.toUpperCase() == 'NONE' || field.toUpperCase() == 'NULL' || re.test(field)){
+    if (field.toUpperCase() == 'NONE' || field.toUpperCase() == 'NULL' || validateDate(field)){
         valid = true;
     } else {
         valid = false;
@@ -27,7 +45,7 @@ function updateValidate(){
 
 $(document).ready(function() {
 
-    $(".closeme").bind('click', function(ev){
+    $(".dispatch-closeme").bind('click', function(ev){
         $(".error, .flashes").hide();
     });
     
@@ -88,7 +106,7 @@ $(document).ready(function() {
     <p>Here are the jobs in the database:</p>
     {% with messages = get_flashed_messages() %}
       {% if messages %}
-        <ul class="flashes"><img style="float:left; width: 18px; margin:auto; padding-right: 40px" class='closeme' src="static/images/close.png" />
+        <ul class="flashes"><img style="float:left; width: 18px; margin:auto; padding-right: 40px" class='dispatch-closeme' src="static/images/close.png" />
         {% for message in messages %}
           <li>{{ message }}</li>
         {% endfor %}

@@ -37,9 +37,10 @@ def logged_in(f):
             return f(*args, **kwargs)
         else:
             flash('Please log in first...', 'error')
-            next_url = request.url
-            login_url = '%s?next=%s' % (url_for('login'), next_url)
-            return redirect(login_url)
+#             next_url = request.url
+#             login_url = '%s?next=%s' % (url_for('login'), next_url)
+            return redirect(url_for('login'))
+            
     return decorated_function
 
 @app.route('/logout')
@@ -81,9 +82,16 @@ def login():
 
 @app.route('/resetdb')
 def resetdb():
+    ## data for original sample jobs, j_id 100 through 127
+    resetdata = [(None, 'pending', 100), ('2013-11-01', 'completed', 101), (None, 'pending', 102), ('2013-11-02', 'completed', 103), ('2013-11-03', 'pending', 104), ('2013-11-04', 'pending', 105), (None, 'pending', 106), ('2013-11-05', 'pending', 107), (None, 'pending', 108), ('2013-11-06', 'completed', 109), (None, 'pending', 110), ('2013-11-07', 'completed', 111), (None, 'pending', 112), ('2013-11-08', 'completed', 113), (None, 'pending', 114), ('2013-11-09', 'completed', 115), (None, 'pending', 116), ('2013-11-10', 'pending', 117), (None, 'pending', 118), ('2013-11-11', 'pending', 119), (None, 'pending', 120), ('2013-11-12', 'pending', 121), (None, 'pending', 122), ('2013-11-13', 'pending', 123), (None, 'pending', 124), ('2013-11-14', 'pending', 125), (None, 'pending', 126), ('2013-11-15', 'pending', 127)]
+
     IPadd = request.environ['REMOTE_ADDR']
     db = MySQLdb.connect(**CONNECTION_ARGS)
     cur = db.cursor()
+    
+    for x in resetdata:
+        cur.execute("update jobs set appointment = %s, job_status = %s where j_id=%s", (x[0],x[1],x[2]))
+    
     rows = cur.execute("delete from jobs where j_ip = %s", (IPadd))
     db.commit()
     cur.close()
@@ -112,7 +120,6 @@ def dispatcher():
         if field == 'job_status':
             query = set_job_status
         else:
-            #logger.info("%s", new_value)
             query = set_appointment
             if new_value.upper() == 'NULL' or new_value.upper() == 'NONE': new_value = None
         
@@ -121,10 +128,8 @@ def dispatcher():
         try:
             affected_count = cur.execute(query, (new_value, jid))
             db.commit()
-            #logger.info("%d", affected_count)
             if affected_count > 0: flash( 'your update was successful' )
         except MySQLdb.IntegrityError:
-            #logger.warn("failed to update %s" % (jid,))
             error = "failed to update job ID: %s" % (jid,)
         finally:
             cur.close()
@@ -170,7 +175,6 @@ def repairRequest():
         description = request.form['description']
         appointment = None
         job_status = 'pending'
-        #logger.info("fname: %s, uname: %s, cid: %s", fname,lname,cid)
         
         rows = cur.execute("insert into jobs (j_ip,cid, make, appliance, appointment, job_status, description) values\
             (%s, %s, %s, %s, %s, %s, %s)", (host, cid, make, type, appointment, job_status, description))
