@@ -13,15 +13,15 @@ from hashlib import sha1
 from pprint import pprint
 from flask import Flask, request, flash, Response, session, g, jsonify, redirect, url_for, abort, render_template
 import MySQLdb
-from AAR_config import SECRET_KEY, CONNECTION_ARGS
+from AAR_config import SECRET_KEY, CONNECTION_ARGS, RESET_DATA
 ########### local and temporary debugging crap: ###########
-# import logging
-# logger = logging.getLogger('aarapp')
-# hdlr = logging.FileHandler('/Users/jjc/Desktop/aarapp.log')
-# formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-# hdlr.setFormatter(formatter)
-# logger.addHandler(hdlr) 
-# logger.setLevel(logging.INFO)
+import logging
+logger = logging.getLogger('aarapp')
+hdlr = logging.FileHandler('/Users/jjc/Desktop/aarapp.log')
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+hdlr.setFormatter(formatter)
+logger.addHandler(hdlr) 
+logger.setLevel(logging.INFO)
 ##########################################################
 
 login_error = '''I'm sorry. I can't find that combination of credentials in my database. Perhaps you mis-typed your password?'''
@@ -37,8 +37,6 @@ def logged_in(f):
             return f(*args, **kwargs)
         else:
             flash('Please log in first...', 'error')
-#             next_url = request.url
-#             login_url = '%s?next=%s' % (url_for('login'), next_url)
             return redirect(url_for('login'))
             
     return decorated_function
@@ -80,22 +78,22 @@ def login():
         cur.close()
     return render_template('login.html', error=error, session=session, reqenviron = request.environ,)
 
-@app.route('/resetdb')
-def resetdb():
-    ## data for original sample jobs, j_id 100 through 127
-    resetdata = [(None, 'pending', 100), ('2013-11-01', 'completed', 101), (None, 'pending', 102), ('2013-11-02', 'completed', 103), ('2013-11-03', 'pending', 104), ('2013-11-04', 'pending', 105), (None, 'pending', 106), ('2013-11-05', 'pending', 107), (None, 'pending', 108), ('2013-11-06', 'completed', 109), (None, 'pending', 110), ('2013-11-07', 'completed', 111), (None, 'pending', 112), ('2013-11-08', 'completed', 113), (None, 'pending', 114), ('2013-11-09', 'completed', 115), (None, 'pending', 116), ('2013-11-10', 'pending', 117), (None, 'pending', 118), ('2013-11-11', 'pending', 119), (None, 'pending', 120), ('2013-11-12', 'pending', 121), (None, 'pending', 122), ('2013-11-13', 'pending', 123), (None, 'pending', 124), ('2013-11-14', 'pending', 125), (None, 'pending', 126), ('2013-11-15', 'pending', 127)]
 
-    IPadd = request.environ['REMOTE_ADDR']
-    db = MySQLdb.connect(**CONNECTION_ARGS)
-    cur = db.cursor()
+
+@app.route('/resetdb', methods=['GET', 'POST'])
+def resetdb():
+    if request.method == 'POST':
+        IPadd = request.environ['REMOTE_ADDR']
+        db = MySQLdb.connect(**CONNECTION_ARGS)
+        cur = db.cursor()
     
-    for x in resetdata:
-        cur.execute("update jobs set appointment = %s, job_status = %s where j_id=%s", (x[0],x[1],x[2]))
+        for x in RESET_DATA:
+            cur.execute("update jobs set appointment = %s, job_status = %s where j_id=%s", (x[0],x[1],x[2]))
     
-    rows = cur.execute("delete from jobs where j_ip = %s", (IPadd))
-    db.commit()
-    cur.close()
-    return jsonify({'IP': IPadd,'rows_deleted': rows})
+        rows = cur.execute("delete from jobs where j_ip = %s", (IPadd))
+        db.commit()
+        cur.close()
+        return jsonify({'IP': IPadd,'rows_deleted': rows})
     
 @app.route('/dispatcher', methods=['GET', 'POST'])
 @logged_in
@@ -103,8 +101,6 @@ def dispatcher():
     error = None
     db = MySQLdb.connect(**CONNECTION_ARGS)
     cur = db.cursor()
-    if not session.get('logged_in'):
-        abort(401)
     if session.get('role') != 'admin':
         flash( 'please log in first' )
         return logout()

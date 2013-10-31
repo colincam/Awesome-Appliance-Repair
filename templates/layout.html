@@ -1,12 +1,9 @@
-<!doctype html>
+<!DOCTYPE html>
 <head>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'sorter-blue/style.css') }}"></link>
+<meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'sorter-blue/style.css') }}" />
 <script type="text/javascript" src="{{ url_for('static', filename = 'js/jquery-1.10.2.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename = 'js/jquery.simplemodal.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename = 'js/jquery.tablesorter.min.js') }}"></script>
-<!-- 
-<script type="text/javascript">$SCRIPT_ROOT = {{ request.script_root|tojson|safe }};</script>
- -->
 
 <style>
     body {
@@ -60,7 +57,7 @@
         width: 340px;
         margin: 16px 20px;
     }
-    
+        
     #infodiv {
         width: 340px;
         float: right;
@@ -94,31 +91,12 @@
     
     label {
         float:left;
+        clear: left;
         width:30%;
         margin-right:0.5em;
         padding-top:0.2em;
         text-align:right;
     }
-
-/* getting rid of fieldset?
-    #loginform {
-        float: right;
-        clear: both;
-        width: 316px;
-        margin: 16px 20px;
-        border: 2px groove;
-        padding: 9px;
-    }
-
-   legend {
-        padding: 0.2em .5em;
-        font-weight: bold;
-        margin: -24px 0px 16px;
-        display: block;
-        background: #fff;
-    }
-    
- */
 
     legend {
         padding: 0.2em .5em;
@@ -187,8 +165,9 @@
         background-color: #f18a20; 
         color: #fff;
         padding: 0px;
-        border-radius: 16px;
-    }
+        -moz-border-radius: 16px;
+        -webkit-border-radius: 16px;
+        border-radius: 16px;    }
     
     #jobs-table-div {height: 300px; overflow: scroll}
     #requested-jobs-table-div {
@@ -202,11 +181,10 @@
     #requested-jobs-table th {border: none}
     
 </style>
-
-</head>
 <title>AWESOME Appliance Repair</title>
+</head>
 <div id="container">
-<div id="header"><img src="{{ url_for('static', filename = 'images/aar_logo1.png')}}" /></div>
+<div id="header"><img src="{{ url_for('static', filename = 'images/aar_logo1.png')}}" alt="aar_logo1" /></div>
 {% block body %}{% endblock %}
 <div id="footer"></div>
 </div>

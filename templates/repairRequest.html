@@ -60,10 +60,10 @@ $(document).ready(function() {
 <div id="request-form-div" style="height:350px">
 <form id="request-form" action="" method=post onsubmit="return validateForm();" >
     <fieldset><legend>Repair Request</legend>
-        <label for="make">Manufacturer:</label> <input type="text" size=30 name="make"><br>
-        <label for="type">Appliance Type:</label> <input type="text" size=30 name="type"><br>
+        <label for="make">Manufacturer:</label> <input style="width: 50%" type="text" size=30 name="make"><br>
+        <label for="type">Appliance Type:</label> <input style="width: 50%; margin-top: 3px" type="text" size=30 name="type"><br>
         <label for="description">A brief description of the problem<br><span style="font-size: 75%">(140 characters)</span>:</label>
-    <textarea columns="180" rows="4" maxlength="140" style="width: 250px" name="description" ></textarea><br>
+    <textarea columns="180" rows="4" maxlength="140" style="width: 250px; margin-top: 3px" name="description" ></textarea><br>
     <input type=submit value=Submit>
 
     </fieldset>
