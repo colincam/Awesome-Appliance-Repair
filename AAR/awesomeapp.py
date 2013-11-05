@@ -15,13 +15,13 @@ from flask import Flask, request, flash, Response, session, g, jsonify, redirect
 import MySQLdb
 from AAR_config import SECRET_KEY, CONNECTION_ARGS, RESET_DATA
 ########### local and temporary debugging crap: ###########
-import logging
-logger = logging.getLogger('aarapp')
-hdlr = logging.FileHandler('/Users/jjc/Desktop/aarapp.log')
-formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-hdlr.setFormatter(formatter)
-logger.addHandler(hdlr) 
-logger.setLevel(logging.INFO)
+# import logging
+# logger = logging.getLogger('aarapp')
+# hdlr = logging.FileHandler('/Users/jjc/Desktop/aarapp.log')
+# formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+# hdlr.setFormatter(formatter)
+# logger.addHandler(hdlr) 
+# logger.setLevel(logging.INFO)
 ##########################################################
 
 login_error = '''I'm sorry. I can't find that combination of credentials in my database. Perhaps you mis-typed your password?'''
