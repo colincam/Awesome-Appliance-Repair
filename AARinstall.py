@@ -3,15 +3,19 @@
 from subprocess import Popen
 import os, binascii
 
-# assumes that apt-get update, and apt-get dist-upgrade, AND apt-get install unzip have been done
+# This assumes that apt-get update, and apt-get dist-upgrade,
+# AND apt-get install unzip have been done
 # 
 # 1. wget https://github.com/colincam/Awesome-Appliance-Repair/archive/master.zip
-# 2. mv AAR to /var/www/
-# 3. sudo su root
-# 4. run script: python AARinstall
-# 
-# To my astonishment, this worked on almost the first try. Huh! go figger.
-# 
+# 2. unzip master.zip
+# 3. cd into Awesome-Appliance-Repair
+# 4. mv AAR to /var/www/
+# 5. sudo su root
+# 6. run script: python AARinstall
+# 7. each time a password is asked for mysql root user, just hit return
+#
+# To my astonishment, this worked on almost the first try.
+# It shouldn't have worked at all: missing is a step to chown and chmod the application files.
 
 if __name__ == '__main__':
 
@@ -39,7 +43,7 @@ if __name__ == '__main__':
     
     conn_args_string = """CONNECTION_ARGS = {"host":"localhost", "user":"aarapp", "passwd":"%s", "db":"AARdb"}\n\n""" % appdbpw
     
-    secret_key_string = """SECRET_KEY = "%s"\n\n """ % secretkey
+    secret_key_string = """SECRET_KEY = "%s"\n\n""" % secretkey
     
     reset_data_string = """RESET_DATA = [(None, 'pending', 100), ('2013-11-01', 'completed', 101), (None, 'pending', 102), ('2013-11-02', 'completed', 103), ('2013-11-03', 'pending', 104), ('2013-11-04', 'pending', 105), (None, 'pending', 106), ('2013-11-05', 'pending', 107), (None, 'pending', 108), ('2013-11-06', 'completed', 109), (None, 'pending', 110), ('2013-11-07', 'completed', 111), (None, 'pending', 112), ('2013-11-08', 'completed', 113), (None, 'pending', 114), ('2013-11-09', 'completed', 115), (None, 'pending', 116), ('2013-11-10', 'pending', 117), (None, 'pending', 118), ('2013-11-11', 'pending', 119), (None, 'pending', 120), ('2013-11-12', 'pending', 121), (None, 'pending', 122), ('2013-11-13', 'pending', 123), (None, 'pending', 124), ('2013-11-14', 'pending', 125), (None, 'pending', 126), ('2013-11-15', 'pending', 127)]
     """
@@ -57,93 +61,4 @@ if __name__ == '__main__':
     cur.execute("GRANT CREATE,INSERT,DELETE,UPDATE,SELECT on AARdb.* to aarapp@localhost")
 
 # start apache
-    Popen(['apachectl', 'start'], shell=False).wait()
-
-
-
-# 
-# ### now get AAR dir; from github? (reorganize dir struct first AAR w/app files, outside AAR apache config and this install.py file
-# # wget https://github.com/colincam/Awesome-Appliance-Repair/archive/master.zip
-# # unzip, then mv to AAR at /var/www
-# 
-# ### also use os.chmod(path, mode) and os.chown(path, uid, gid)
-# 
-# ## create AAR_config.py programmatically
-# # Do this from w/in python script: generate db pw and writing it and 'secret key' to AAR_config.py
-# 
-# # then do
-# # mysql -u root < make_AARdb.sql
-# 
-# # for pw and secret string use 
-# # binascii.b2a_base64(os.urandom(6)).strip('\n')
-# # then using mysqldb do
-# # CREATE USER 'aarapp'@'localhost' IDENTIFIED BY 'OTC8eLTXr2mW&cjY';
-# # GRANT CREATE,INSERT,DELETE,UPDATE,SELECT on AARdb.* to aarapp@localhost;
-# 
-# 
-# 
-# #### AAAArgh!! DO NOT TRY TO INSTALL MySQLdb WITH PIP!!! USE THIS INSTEAD:
-# ### sudo apt-get install python-mysqldb
-# ### TODO
-# # Create database thus:
-# # mysql -u root < make_AARdb.sql
-# # create the aarapp user and pw for the webapp to use, and grant permissions
-# # (can I write this into the .sql file?
-# # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# # install pip with easy_install
-# # update pip
-# # install MySQLdb python module
-# # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# # get the AAR repo from github: no need to do this
-# # 
-# # os.chdir('/var/www')
-# # use Popen for:
-# # wget https://github.com/colincam/Awesome-Appliance-Repair/archive/master.zip
-# # 
-# # unzip into /var/www/AAR
-# # 
-# # Then chown and chmod as needed
-# # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# # edit apache config file at /etc/apache2/sites-enabled/000-default
-# # adding the mod_wsgi stuff
-# # apachectl restart
-# # 
-# # and then it 'just works', HA.
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    Popen(['apachectl', 'restart'], shell=False).wait()
