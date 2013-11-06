@@ -3,16 +3,21 @@
 from subprocess import Popen
 import os, binascii
 
-# This assumes that apt-get update, and apt-get dist-upgrade,
-# AND apt-get install unzip have been done
+# This assumes that apt-get update, and apt-get dist-upgrade, AND
+# apt-get install apache2 AND unzip have been done. The script below
+# includes Apache, but apt-get does the right thing and simply
+# notes that the existing version is up to date.
 # 
 # 1. wget https://github.com/colincam/Awesome-Appliance-Repair/archive/master.zip
 # 2. unzip master.zip
 # 3. cd into Awesome-Appliance-Repair
-# 4. mv AAR to /var/www/
+# 4. sudo mv AAR to /var/www/
 # 5. sudo su root
-# 6. run script: python AARinstall
+# 6. run script: python AARinstall.py
 # 7. each time a password is asked for mysql root user, just hit return
+#       would this work to get rid of the interactive pw prompts?
+#         export DEBIAN_FRONTEND=noninteractive
+#         apt-get -q -y install mysql-server
 #
 # To my astonishment, this worked on almost the first try.
 # It shouldn't have worked at all: missing is a step to chown and chmod the application files.
@@ -49,16 +54,17 @@ if __name__ == '__main__':
     """
     
     f.write(conn_args_string + secret_key_string + reset_data_string)
-
+    f.close()
+    
 # Create the database
     Popen("mysql -u root < make_AARdb.sql", shell=True).wait()
     
-# Create DB user and permissions (it's gonna break here isn't it)
+# Create DB user and permissions
     import MySQLdb
     db = MySQLdb.connect(user='root', host='localhost', db='AARdb')
     cur = db.cursor()
     cur.execute("CREATE USER 'aarapp'@'localhost' IDENTIFIED BY %s", (appdbpw,))
     cur.execute("GRANT CREATE,INSERT,DELETE,UPDATE,SELECT on AARdb.* to aarapp@localhost")
 
-# start apache
+# restart apache
     Popen(['apachectl', 'restart'], shell=False).wait()
