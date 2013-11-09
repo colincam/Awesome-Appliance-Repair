@@ -16,16 +16,14 @@ $(document).ready(function() {
             'type': 'POST',
             'data': {'reset': true},
             'success': function(data){
-                $("#loginpage_content").append("<div class='error'><img class='closeme' src='static/images/close.png' /><p>" + data.rows_deleted + " records, created from " + data.IP + ", were deleted,<br> and the original sample data was restored.</p></div>");
+                $("#loginpage_content").append("<div class='error'><img class='closeme' src='static/images/close.png' /><p>" + (data.rows_deleted - 28) + " new records, created from " + data.IP + ", were deleted, and the original sample data was restored.</p></div>");
             
                 $(".closeme").bind('click', function(ev){
                     $(".error").remove();
                 });
             }
-        });
-    
+        });    
     });
-
 });
 
 </script>
@@ -71,6 +69,4 @@ $(document).ready(function() {
 {% endwith %}
 
   </div>
-<pre style="display: none">{{session|pprint()}}</pre>
-<pre style="display: none">{{reqenviron|pprint()}}</pre>
 {% endblock %}

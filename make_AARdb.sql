@@ -104,16 +104,5 @@ insert into jobs (j_ip,cid, make, appliance, appointment, job_status, descriptio
     ('000.000.000.000',26,'Cookmore','Outdoor Grill', '2013-11-13', 'pending', "Smoker box is stuck"),
     ('000.000.000.000',27,'Kenmore','Water heater', null, 'pending', "Can't adjust temperature"),
     ('000.000.000.000',28,'Sanyo','Minifridge', '2013-11-14', 'pending', "Makes a lot of noise"),
-    ('000.000.000.000',29,'Bosch','Dishwasher', null, 'pending', "leaves spots on my glases"),
+    ('000.000.000.000',29,'Bosch','Dishwasher', null, 'pending', "leaves spots on my glasses"),
     ('000.000.000.000',30,'Whirlpool','Trash Compactor', '2013-11-15', 'pending', "leaking hydraulic fluid");
-
-
-# notes:
-# for multiple column primary key, can't use autoincrement. Job Id's will be generated in the code.
-
-
-# ALTER TABLE jobs add column tid mediumint, add foreign key(tid) references tech(tid);
-# SELECT j.jid, c.cid, c.lname, j.make, j.appliance, j.job_status, j.appointment, j.description
-# FROM jobs j, customer c
-# WHERE j.cid = c.cid;
-

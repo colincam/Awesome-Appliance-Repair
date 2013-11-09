@@ -50,7 +50,6 @@ $(document).ready(function() {
     });
     
     $("#jobs-table").tablesorter({ 
-        // sort on the first column and third column, order asc 
         sortList: [[1,0]] 
     });
     
@@ -64,15 +63,25 @@ $(document).ready(function() {
         
         // Submit button sends 'POST', no ajax needed.
         if (field_name == "job_status"){
-            $("#update").html("<form id='update-form' action='' method=post > <fieldset> <legend>Update Field</legend> Job ID: " + job_id + " <input type=hidden name='job_id' value=" + job_id +" ><br>Column: " + field_name + "<input type=hidden name='field_value' value=" + field_name + " ><input type=hidden name='current_value' value=" + field_value + " > <br><br><input type='radio' name='new_value' value='pending'>pending<br> <input type='radio' name='new_value' value='completed'>completed<br><br> <input type=submit value=Update> <input type='button' onclick='formReset()' value='Cancel'></fieldset> </form>").show();
-            } else {
-            $("#update").html("<form id='update-form' action='' onsubmit='return updateValidate();' method=post >\
+            $("#update").html("<form id='update-form' method=post >\
             <fieldset>\
-                 <legend>Update Field</legend> Job ID: " + job_id + "\
+                <legend>Update</legend> Job " + job_id + ": Status\
+                <input type=hidden name='job_id' value=" + job_id +" >\
+                <input type=hidden name='field_value' value='" + field_name + "' >\
+                <input type=hidden name='current_value' value=" + field_value + " >\
+                <br><br><input type='radio' name='new_value' value='pending'>pending<br>\
+                <input type='radio' name='new_value' value='completed'>completed<br><br>\
+                <input type=submit value=Update>\
+                <input type='button' onclick='formReset()' value='Cancel'>\
+            </fieldset> </form>").show();
+            } else {
+            $("#update").html("<form id='update-form' onsubmit='return updateValidate();' method=post >\
+            <fieldset>\
+                 <legend>Update</legend> Job " + job_id + ": Appointment Date\
                  <input type=hidden name='job_id' value=" + job_id +" >\
-                 <br>Column: " + field_name + "\
                  <input type=hidden name='field_value' value='" + field_name + "' >\
-                 <br><br> Enter Date yyyy-mm-dd: <input type='text' name='new_value' value='" + field_value + "'>\
+                 <br><br> Enter Date <span style='font-size: 80%'>(yyyy-mm-dd)</span>:\
+                 <input type='text' name='new_value' value='" + field_value + "'>\
                  <br><br> <input type=submit value=Update>\
                  <input type='button' onclick='formReset()' value='Cancel'>\
             </fieldset> </form>").show();
@@ -84,15 +93,7 @@ $(document).ready(function() {
         } else if (field_value == 'completed'){
             $("#update-form input[type='radio'][value='completed']").prop('checked', true)
         }
-        
-        
-        
-        
     });
-    
-    
-    //TODO: form validation.
-
 });
 
 </script>
@@ -138,9 +139,6 @@ $(document).ready(function() {
             </tbody>
         </table>
     </div>
-    <pre id='tst'></pre>
-    <p style="display: none">{{ses}}</p>
-    <pre style="display: none">{{reqenviron|pprint()}}</pre>
     <div id="update">&nbsp;</div>
     {% if error %}
         <div><img class='closeme' src="static/images/close.png" /><strong>Error:</strong> {{ error }}</div>

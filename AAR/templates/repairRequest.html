@@ -3,7 +3,6 @@
 {% block body %}
 
 <script type="text/javascript">
-
 function validateForm(){
     $(".request-error").remove();
     var valid = true
@@ -30,82 +29,71 @@ $(document).ready(function() {
     });
     
     $("#requested-jobs-table").tablesorter({ 
-        // sort on the first column and third column, order asc 
         sortList: [[0,1]] 
     });
 
 });
-
-
 </script>
+
 <title>Request for Repair</title>
 <div id="navbar">
 <a href="{{ url_for('logout') }}">{{ user }}: logout</a>
 </div>
-
 <div id="reprequest" style="background: url('static/images/range.png') no-repeat 0 100%; height: 500px">
-
-<p class='aarhead'>Welcome, {{fname}} {{lname}}</p>
-<p style="padding: 0 24px">Please tell us what kind of appliance needs repair and provide a brief description of the problem. We'll schedule an appointment as soon as possible.</p>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul class="flashes"><img style="float:left; width: 18px; margin:auto; padding-right: 40px" class='closeme' src="static/images/close.png" />
-        {% for message in messages %}
-          <li>{{ message }}</li>
-        {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
-    
-<div id="request-form-div" style="height:350px">
-<form id="request-form" action="" method=post onsubmit="return validateForm();" >
-    <fieldset><legend>Repair Request</legend>
-        <label for="make">Manufacturer:</label> <input style="width: 50%" type="text" size=30 name="make"><br>
-        <label for="type">Appliance Type:</label> <input style="width: 50%; margin-top: 3px" type="text" size=30 name="type"><br>
-        <label for="description">A brief description of the problem<br><span style="font-size: 75%">(140 characters)</span>:</label>
-    <textarea columns="180" rows="4" maxlength="140" style="width: 250px; margin-top: 3px" name="description" ></textarea><br>
-    <input type=submit value=Submit>
-
-    </fieldset>
-</form>
-
-
-{% if result %}
-<p style="float: right; width: 495px; text-align: left">Here's a list of the jobs you've submitted:</p>
-<div id="requested-jobs-table-div">
-    
-    <table id="requested-jobs-table" class="tablesorter">
-        <thead>
-            <tr><th id='jid'>job ID</th><th id='make'>Make</th><th id='appliance'>Appliance</th><th id='job_status'>Job Status</th><th id='description'>Appointment</th>
-            </tr>
-        </thead>
-        <tbody id="result">        
-        {% for row in result %}
-            <tr id="{{ loop.index }} "class="{{ loop.cycle('odd', 'even') }}">
-            {% for cell in row %}
-                {% if loop.index == 6 %}
-                <td class="job_status">{{ cell }}</td>
-                {% elif loop.index == 7 %}
-                <td class="job_date">{{ cell }}</td>
-                {% else %}
-                <td>{{ cell }}</td>
-                {% endif %}
+    <p class='aarhead'>Welcome, {{fname}} {{lname}}</p>
+    <p style="padding: 0 24px">Please tell us what kind of appliance needs repair and provide a brief description of the problem. We'll schedule an appointment as soon as possible.</p>
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <ul class="flashes"><img style="float:left; width: 18px; margin:auto; padding-right: 40px" class='closeme' src="static/images/close.png" />
+            {% for message in messages %}
+              <li>{{ message }}</li>
             {% endfor %}
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</div>
-{% endif %}
+            </ul>
+          {% endif %}
+        {% endwith %}    
+    <div id="request-form-div" style="height:350px">
+        <form id="request-form" action="" method=post onsubmit="return validateForm();" >
+            <fieldset><legend>Repair Request</legend>
+                <label for="make">Manufacturer:</label> <input style="width: 50%" type="text" size=30 name="make"><br>
+                <label for="type">Appliance Type:</label> <input style="width: 50%; margin-top: 3px" type="text" size=30 name="type"><br>
+                <label for="description">A brief description of the problem<br><span style="font-size: 75%">(140 characters)</span>:</label>
+            <textarea columns="180" rows="4" maxlength="140" style="width: 250px; margin-top: 3px" name="description" ></textarea><br>
+            <input type=submit value=Submit>
 
-    {% if error %}
-        <div class="request-error"><img class='request-closeme' src="static/images/close.png" /><p id="request-error-inner">{{ error }}</p></div>
-    {% endif %}
+            </fieldset>
+        </form>
+        {% if result %}
+        <p style="float: right; width: 495px; text-align: left">Here's a list of the jobs you've submitted:</p>
+        <div id="requested-jobs-table-div">    
+            <table id="requested-jobs-table" class="tablesorter">
+                <thead>
+                    <tr><th id='jid'>job ID</th><th id='make'>Make</th><th id='appliance'>Appliance</th><th id='job_status'>Job Status</th><th id='description'>Appointment</th>
+                    </tr>
+                </thead>
+                <tbody id="result">        
+                {% for row in result %}
+                    <tr id="{{ loop.index }} "class="{{ loop.cycle('odd', 'even') }}">
+                    {% for cell in row %}
+                        {% if loop.index == 6 %}
+                        <td class="job_status">{{ cell }}</td>
+                        {% elif loop.index == 7 %}
+                        <td class="job_date">{{ cell }}</td>
+                        {% else %}
+                        <td>{{ cell }}</td>
+                        {% endif %}
+                    {% endfor %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
 
-</div>
-<div style="float: left">
-    <p style="display: none">{{ses}}</p>
-    <pre style="display: none">{{reqenviron|pprint()}}</pre>
-</div>
+        {% if error %}
+            <div class="request-error"><img class='request-closeme' src="static/images/close.png" />
+                <p id="request-error-inner">{{ error }}</p>
+            </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
