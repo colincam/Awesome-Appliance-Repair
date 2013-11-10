@@ -49,26 +49,24 @@ def resetdb():
     IPadd = request.environ['REMOTE_ADDR']
     db = MySQLdb.connect(**CONNECTION_ARGS)
     cur = db.cursor()
-
-    rows = cur.execute("delete from jobs where j_ip = %s", (IPadd))
-    db.commit()
-    cur.close()
+    cur.execute("select j_ip from jobs where j_ip = %s limit 1", IPadd)
+    if cur.fetchone() > 0:
+        rows = cur.execute("delete from jobs where j_ip = %s", (IPadd))
+        db.commit()
+        cur.close()
     
-    populate_db(IPadd)
-    return jsonify({'IP': IPadd,'rows_deleted': rows})    
+        populate_db(IPadd)
+        return jsonify({'IP': IPadd,'rows_deleted': rows})
+    else:
+        return jsonify({'no_action': True})
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
     login_error = '''I'm sorry. I can't find that combination of credentials in my database. Perhaps you mis-typed your password?'''
     error = None
-    next = request.args.get('next')
     IPadd = request.environ['REMOTE_ADDR']
     db = MySQLdb.connect(**CONNECTION_ARGS)
     cur = db.cursor()
-    cur.execute("select j_ip from jobs where j_ip = %s limit 1", IPadd)
-    IPDB = cur.fetchone() > 0
-    if not IPDB:
-        populate_db(IPadd)
     
     if request.method == 'POST':
         uname = request.form['username']
@@ -85,7 +83,11 @@ def login():
             session['logged_in'] = True
             session['username'] = uname
             session['role'] = role
-            
+
+            cur.execute("select j_ip from jobs where j_ip = %s limit 1", IPadd)
+            if not cur.fetchone() > 0:
+                populate_db(IPadd)
+
             if session['role'] == 'admin':
                 return redirect(url_for('dispatcher'))
             elif session['role'] == 'customer':
@@ -103,6 +105,7 @@ def dispatcher():
     if session.get('role') != 'admin':
         flash( 'please log in first' )
         return logout()
+    
     
     ##POST
     if request.method == 'POST':
@@ -178,7 +181,7 @@ def repairRequest():
         rows = cur.execute("select j_id, make, appliance, job_status, appointment from jobs where cid = %s and j_ip = %s", (cid, IPadd))
         result = cur.fetchall()
         cur.close()
-        error = "Your request has been added to the database."    
+        flash("Your request has been added to the database.")
         
         return render_template("repairRequest.html",
             title = "Repair Request",
