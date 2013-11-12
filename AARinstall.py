@@ -9,6 +9,9 @@ import sys
 # notes that the existing version is up to date.
 
 # 1. wget https://github.com/colincam/Awesome-Appliance-Repair/archive/master.zip
+# 1. do it without unzip:
+#       curl -L -o master.tar.gz https://api.github.com/repos/colincam/Awesome-Appliance-Repair/tarball
+#       and then: tar -xf master.tar.gz
 # 2. unzip master.zip
 # 3. cd into Awesome-Appliance-Repair
 # 4. sudo mv AAR to /var/www/
@@ -25,9 +28,9 @@ import sys
 if __name__ == '__main__':
     dbpswd = sys.argv[1]
 
-# change mode and ownership  of the files in AAR    
-    Popen(['chown', '-R', 'www-data:www-data', '/var/www/AAR'], shell=False).wait()
-    Popen(['chmod', '-R', '644', '/var/www/AAR'], shell=False).wait()
+# change mode and ownership  of the files in AAR   755 for /var/www? 
+#     Popen(['chown', '-R', 'www-data:www-data', '/var/www/AAR'], shell=False).wait()
+#     Popen(['chmod', '-R', '644', '/var/www/AAR'], shell=False).wait()
 
 # apt-get the stuff we need    
     proc = Popen([

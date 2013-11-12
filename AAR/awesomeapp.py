@@ -115,12 +115,7 @@ def dispatcher():
         set_job_status = "update jobs set job_status = %s where j_id=%s and j_ip=%s"
         set_appointment = "update jobs set appointment = %s where j_id=%s and j_ip=%s"
         
-        if field == 'job_status':
-            query = set_job_status
-        else:
-            query = set_appointment
-            if new_value.upper() == 'NULL' or new_value.upper() == 'NONE': new_value = None
-        
+        if new_value.upper() == 'NULL' or new_value.upper() == 'NONE': new_value = None
         query = set_job_status if field == 'job_status' else set_appointment
         
         try:
@@ -166,9 +161,9 @@ def repairRequest():
 
     #POST
     if request.method == 'POST':
-        make = request.form['make']
-        type = request.form['type']
-        description = request.form['description']
+        make = request.form['make'].strip()
+        type = request.form['type'].strip()
+        description = request.form['description'].strip()
         appointment = None
         job_status = 'pending'
         

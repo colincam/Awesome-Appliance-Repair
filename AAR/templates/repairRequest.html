@@ -2,39 +2,6 @@
 
 {% block body %}
 
-<script type="text/javascript">
-function validateForm(){
-    $(".request-dialog").remove();
-    var valid = true
-    $("#request-form input[type='text'], textarea").each(function(){
-        var $this = $(this);
-        if ($this.val() == null || $this.val() == ''){
-            valid = false;
-        };
-    });
-
-    if(valid == false){
-        $("#request-form-div").append("<div class='request-dialog'><img class='request-closeme' src='static/images/close.png' /><p id='request-dialog-inner'>Please fill out all of the fields above before clicking the Submit button.</p></div>");
-        $(".request-closeme").on('click', function(ev){
-            $(".request-dialog").remove();
-        });            
-        return false;
-    }
-}
-
-$(document).ready(function() {
-
-    $(".request-closeme").on('click', function(ev){
-        $(".request-dialog").remove();
-    });
-    
-    $("#requested-jobs-table").tablesorter({ 
-        sortList: [[0,1]] 
-    });
-
-});
-</script>
-
 <title>Request for Repair</title>
 <div id="navbar">
 <a href="{{ url_for('logout') }}">{{ user }}: logout</a>
