@@ -1,13 +1,11 @@
-/////////////////////////////////////////////
-/* With vars $, $SCRIPT_ROOT, document, alert 
-/* this passes jslint thus:
-/* jslint --white --vars --sloppy AAR.js
-/* copyright, Opscode Inc. 
-/* Apache License
-/* Version 2.0, January 2004
-/* http://www.apache.org/licenses/
-*////////////////////////////////////////////
-
+/*======================================
+* copyright, Opscode Inc. 
+* Apache License
+* Version 2.0, January 2004
+* http://www.apache.org/licenses/
+*=======================================
+*/
+ 
 function formReset() {
     document.getElementById("update-form").reset();
     $("#update").hide();
@@ -15,7 +13,6 @@ function formReset() {
 
 function validateDate(input) {
     var sdate = input.split('-');
-    
     if (!/^\d{4}$/.test(sdate[0]) || !/^\d{2}$/.test(sdate[1]) || !/^\d{2}$/.test(sdate[2])) {
         alert('not valid date pattern, please use yyyy-mm-dd');
         return false;
@@ -25,7 +22,6 @@ function validateDate(input) {
         var dayfield = sdate[2];
         var dayobj = new Date(yearfield, monthfield - 1, dayfield);
         
-        //type coercion here is convenient
         if ((dayobj.getMonth() + 1 != monthfield) || (dayobj.getDate() != dayfield) || (dayobj.getFullYear() != yearfield)) {
             alert("Invalid Day, Month, or Year range detected. Please correct and submit again.");
             return false;
@@ -69,10 +65,8 @@ function validateForm() {
     }
 }
 
-
-
 $(document).ready(function() {
-    // login.html
+// login.html
     $(".closeme").on('click', function(ev) {
         $(".error").remove();
     });
@@ -81,9 +75,7 @@ $(document).ready(function() {
         $.ajax({
             'url': $SCRIPT_ROOT + '/resetdb',
             'type': 'POST',
-            'data': {
-                'reset': true
-            },
+            'data': {'reset': true},
             'success': function(data) {
                 if (data.no_action === true) {
                     $("#loginpage_content").append("<div class='error'><img class='closeme' src='static/images/close.png' /><p>The sample data has not yet been generated. Please log in first ...</p></div>");
@@ -98,15 +90,13 @@ $(document).ready(function() {
         });
     });
 
-    // dispatcher.html    
+// dispatcher.html    
     $(".dispatch-closeme").bind('click', function(ev) {
         $(".error, .flashes").hide();
     });
 
     $("#jobs-table").tablesorter({
-        sortList: [
-            [1, 0]
-        ]
+        sortList: [[1, 0]]
     });
 
     $(".job_status, .job_date").on('click', function() {
@@ -117,7 +107,6 @@ $(document).ready(function() {
         var field_name = $td.closest('table').find('th').eq($td.index()).attr("id");
         var job_id = $td.parent().children().eq(0).text();
 
-        // Submit button sends 'POST', no ajax needed.
         if (field_name === "job_status") {
             $("#update").html("<form id='update-form' method=post >\
             <fieldset>\
@@ -151,14 +140,12 @@ $(document).ready(function() {
         }
     });
 
-    //repairRequest.html
+// repairRequest.html
     $(".request-closeme").on('click', function(ev) {
         $(".request-dialog").remove();
     });
 
     $("#requested-jobs-table").tablesorter({
-        sortList: [
-            [0, 1]
-        ]
+        sortList: [[0, 1]]
     });
 });

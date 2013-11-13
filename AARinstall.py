@@ -1,36 +1,33 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from subprocess import Popen
-import os, binascii
-import sys
+import os, sys, getpass, binascii
+
 # This assumes that apt-get update, and apt-get dist-upgrade, AND
-# apt-get install apache2 AND unzip have been done. The script below
-# includes Apache, but apt-get does the right thing and simply
-# notes that the existing version is up to date.
+# apt-get install apache2 AND unzip have been done. ALONG WITH mysql:
+# apt-get install mysql-server installs it all:
+    # The following extra packages will be installed:
+    #   libdbd-mysql-perl libdbi-perl libhtml-template-perl libmysqlclient18 libnet-daemon-perl libplrpc-perl libterm-readkey-perl mysql-client-5.5
+    #   mysql-client-core-5.5 mysql-common mysql-server-5.5 mysql-server-core-5.5
+    # Suggested packages:
+    #   libipc-sharedcache-perl tinyca mailx
+    # The following NEW packages will be installed:
+    #   libdbd-mysql-perl libdbi-perl libhtml-template-perl libmysqlclient18 libnet-daemon-perl libplrpc-perl libterm-readkey-perl mysql-client-5.5
+    #   mysql-client-core-5.5 mysql-common mysql-server mysql-server-5.5 mysql-server-core-5.5
+
 
 # 1. wget https://github.com/colincam/Awesome-Appliance-Repair/archive/master.zip
-# 1. do it without unzip:
-#       curl -L -o master.tar.gz https://api.github.com/repos/colincam/Awesome-Appliance-Repair/tarball
-#       and then: tar -xf master.tar.gz
 # 2. unzip master.zip
 # 3. cd into Awesome-Appliance-Repair
 # 4. sudo mv AAR to /var/www/
 # 5. sudo su root
 # 6. run script: python AARinstall.py
-# 7. each time a password is asked for mysql root user, just hit return
-# To my astonishment, this worked on almost the first try.
-# It shouldn't have worked at all: missing is a step to chown and chmod the application files.
-
-## Also NB: to save a lot of pain for the installer (me) include openssh-server in the apt-get list below. That's how you can ssh into the VM (bridged networking, autodetect) and thus get scrollback, copy/paste, drag/drop
-
-## If this version isn't satisfactory, this is the commit we should roll back to: https://github.com/colincam/Awesome-Appliance-Repair/commit/5056fa5899aeed65f85bf4f05c18b7de491a4a49
+# 7. manually execute: apachectl graceful
 
 if __name__ == '__main__':
-    dbpswd = sys.argv[1]
+    root_dbpswd = getpass.getpass('enter the mysql root user password: ')
 
-# change mode and ownership  of the files in AAR   755 for /var/www? 
-#     Popen(['chown', '-R', 'www-data:www-data', '/var/www/AAR'], shell=False).wait()
-#     Popen(['chmod', '-R', '644', '/var/www/AAR'], shell=False).wait()
+    Popen(['chown', '-R', 'www-data:www-data', '/var/www/AAR'], shell=False).wait()
 
 # apt-get the stuff we need    
     proc = Popen([
@@ -45,7 +42,10 @@ if __name__ == '__main__':
 
 # Generate the apache config file in sites-enabled
     Popen(['apachectl', 'stop'], shell=False).wait()
-    Popen(['rm', '/etc/apache2/sites-enabled/*'], shell=False).wait()
+    
+    pth = '/etc/apache2/sites-enabled/'
+    for f in os.listdir(pth):
+        os.remove(pth + f)
     
     f = open('/etc/apache2/sites-enabled/AAR-apache.conf', 'w')
     f.write("""
@@ -70,7 +70,7 @@ if __name__ == '__main__':
 # Generate AAR_config.py with secrets    
     f = open('/var/www/AAR/AAR_config.py', 'w')
     appdbpw = binascii.b2a_base64(os.urandom(6)).strip('\n')
-    secretkey = binascii.b2a_base64(os.urandom(6)).strip('\n')
+    secretkey = binascii.b2a_base64(os.urandom(12)).strip('\n')
     
     conn_args_string = """CONNECTION_ARGS = {"host":"localhost", "user":"aarapp", "passwd":"%s", "db":"AARdb"}\n\n""" % appdbpw
     
@@ -84,7 +84,7 @@ if __name__ == '__main__':
 
 # Create DB, user, and permissions
     import MySQLdb
-    db = MySQLdb.connect(host='localhost', user='root', passwd=dbpswd)
+    db = MySQLdb.connect(host='localhost', user='root', passwd=root_dbpswd)
     sql_script = open('make_AARdb.sql', 'r').read()
     
     cur = db.cursor()
@@ -100,6 +100,5 @@ if __name__ == '__main__':
     
     
 # restart apache
-    Popen(['apachectl', 'start'], shell=False).wait()
-
-## TODO? chown and chmod of app files?
+    # this sometimes fails: Popen(['apachectl', 'graceful'], shell=False).wait()
+    # manually: apachectl graceful

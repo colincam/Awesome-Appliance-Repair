@@ -7,7 +7,6 @@
 # http://www.apache.org/licenses/
 #################################
 
-import sys
 from functools import wraps
 from hashlib import sha1
 from pprint import pprint
