@@ -3,18 +3,7 @@
 from subprocess import Popen
 import os, sys, getpass, binascii
 
-# This assumes that apt-get update, and apt-get dist-upgrade, AND
-# apt-get install apache2 AND unzip have been done. ALONG WITH mysql:
-# apt-get install mysql-server installs it all:
-    # The following extra packages will be installed:
-    #   libdbd-mysql-perl libdbi-perl libhtml-template-perl libmysqlclient18 libnet-daemon-perl libplrpc-perl libterm-readkey-perl mysql-client-5.5
-    #   mysql-client-core-5.5 mysql-common mysql-server-5.5 mysql-server-core-5.5
-    # Suggested packages:
-    #   libipc-sharedcache-perl tinyca mailx
-    # The following NEW packages will be installed:
-    #   libdbd-mysql-perl libdbi-perl libhtml-template-perl libmysqlclient18 libnet-daemon-perl libplrpc-perl libterm-readkey-perl mysql-client-5.5
-    #   mysql-client-core-5.5 mysql-common mysql-server mysql-server-5.5 mysql-server-core-5.5
-
+# The following script assumes that apache2, mysql, and unzip have been installed.
 
 # 1. wget https://github.com/colincam/Awesome-Appliance-Repair/archive/master.zip
 # 2. unzip master.zip
@@ -97,8 +86,3 @@ if __name__ == '__main__':
     cur.execute("GRANT CREATE,INSERT,DELETE,UPDATE,SELECT on AARdb.* to aarapp@localhost")
     cur.close()
     db.close()
-    
-    
-# restart apache
-    # this sometimes fails: Popen(['apachectl', 'graceful'], shell=False).wait()
-    # manually: apachectl graceful
