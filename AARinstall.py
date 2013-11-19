@@ -50,7 +50,8 @@ if __name__ == '__main__':
         Order deny,allow
         Allow from all
       </Directory>
-
+      
+      CustomLog ${APACHE_LOG_DIR}/access.log combined
       ServerAdmin ops@example.com
     </VirtualHost>
     """)
